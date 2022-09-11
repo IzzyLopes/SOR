@@ -20,10 +20,10 @@ struct Elemento {
 typedef Elemento * PONT;  // Elemento *p == PONT p;
 
 struct Lista {
-	PONT inicio; // Ponteiro do tipo elemento que aponta para o inÌcio
+	PONT inicio; // Ponteiro do tipo elemento que aponta para o in√≠cio
 };
 
-/* M…TODOS */
+/* M√âTODOS */
 void initLista(Lista *l) {
 	l->inicio = NULL;
 }
@@ -49,7 +49,7 @@ void exibirElementosLista(Lista *l) {
 	}
 	
 	while(end != NULL) {
-		cout << "Produto " << end->reg.ch << ", preÁo: " << end->reg.preco << endl;
+		cout << "Produto " << end->reg.ch << ", pre√ßo: " << end->reg.preco << endl;
 		end = end->prox;
 	}
 }
@@ -68,25 +68,25 @@ PONT buscaSequencial(Lista *l, tipoChave chave) {
 	return NULL;
 }
 
-// Se eu achar uma chave maior do que a chave procurada (a lista È ordenada) e significa que a chave procurada n„o existe
-// Por isso o while agora verifica se a chave apontada pelo ponteiro ainda È menor que a chave procurada
+// Se eu achar uma chave maior do que a chave procurada (a lista √© ordenada) e significa que a chave procurada n√£o existe
+// Por isso o while agora verifica se a chave apontada pelo ponteiro ainda √© menor que a chave procurada
 void buscaOrdenada(Lista *l, tipoChave chave) {
 	PONT pos = l->inicio;
 	
-	while (pos != NULL && pos->reg.ch < chave) {
+	while ((pos != NULL) && (pos->reg.ch <= chave)) {
 		if(pos->reg.ch == chave) {
-			cout << "Produtode ID " << pos->reg.ch << ", preco: " << pos->reg.preco << endl;
+			cout << "Produto de ID " << pos->reg.ch << ", preco: " << pos->reg.preco << endl;
 			return;
 		}
 		
 		pos = pos->prox;
 	}
 	
-	cout << "Produto n„o encontrado." << endl;
+	cout << "Produto n√£o encontrado." << endl;
 }
 
-// FunÁ„o de busca para saber qual o elemento anterior ao inserido, e qual elemento ele apontava para
-// poder fazer as devidas alteraÁıes de ponteiro squando forinserir um valor novo na Lista
+// Fun√ß√£o de busca para saber qual o elemento anterior ao inserido, e qual elemento ele apontava para
+// poder fazer as devidas altera√ß√µes de ponteiro squando forinserir um valor novo na Lista
 PONT buscaForInsert(Lista *l, tipoChave chave, PONT* ant) {
 	*ant = NULL;
 	PONT atual = l->inicio;
@@ -120,11 +120,30 @@ bool insertLista(Lista *l, Registro reg) {
 		l->inicio = i;
 		i->prox = NULL;
 	} else {
-		i->prox = ant->prox; // Ter· que apontar para o prÛximo do n˙mero que vinha antes dele
-		ant->prox = i;		 // E o prÛximo do anterior deveria apontar para ele
+		i->prox = ant->prox; // Ter√° que apontar para o pr√≥ximo do n√∫mero que vinha antes dele
+		ant->prox = i;		 // E o pr√≥ximo do anterior deveria apontar para ele
 	}
 	
 	return true;
+}
+
+bool excluirLista(Lista *l, Registro reg) {
+	tipoChave chave = reg.ch;
+	PONT ant, i;
+	
+	i = buscaForInsert(l, chave, &ant);
+	
+	if(i != NULL) {
+		if(ant == NULL) {
+			l->inicio = i->prox; // Se ele n√£o tiver anterior, o in√≠cio da lista agora aponta para o pr√≥ximo
+		} else {
+			ant->prox=i->prox; 	 // O elemento anterior, apontar√° para o pr√≥ximo do elemento que est√° sendo exclu√≠do
+		}
+		free(i); 				// Comando para liberar a mem√≥ria
+		return true;
+	} 
+	
+	return false;
 }
 
 void apresentarMenu() {
@@ -136,7 +155,7 @@ void apresentarMenu() {
 	cout << "4 -> Mostrar todos os produtos" << endl;
 	cout << "5 -> Eliminar um produto da lista" << endl;
 	
-	cout << "\nSelecione sua aÁ„o: ";
+	cout << "\nSelecione sua a√ß√£o: ";
 }
 
 /* MAIN */
@@ -163,7 +182,7 @@ int main() {
 				cin >> reg.preco;
 				
 				if(insertLista(&lista, reg) == false) {
-					cout << "J· existe um produto com esse ID cadastrado." << endl;
+					cout << "J√° existe um produto com esse ID cadastrado." << endl;
 				}
 				
 				reg.ch = 0;
@@ -171,18 +190,29 @@ int main() {
 				break;
 			
 			case 2:
-				cout << "A lista contÈm " << tamanhoLista(&lista) << " produtos." << endl;
-				break;
-				
-			case 4:
-				exibirElementosLista(&lista);
+				cout << "A lista cont√©m " << tamanhoLista(&lista) << " produtos." << endl;
 				break;
 				
 			case 3:
 				cout << "Selecione o ID do produto que deseja buscar: ";
 				cin >> id;
 				buscaOrdenada(&lista, id);
-				id =0;
+				id=0;
+				break;
+				
+			case 4:
+				exibirElementosLista(&lista);
+				break;
+				
+			default:
+				cout << "Insira o id do produto: ";
+				cin >> reg.ch;
+				
+				if(excluirLista(&lista, reg) == false) {
+					cout << "O produto com ID " << reg.ch << " n√£o existe." << endl;
+				} else {
+					cout << "O produto foi exclu√≠do com sucesso." << endl;
+				}
 				break;
 		}
 		
