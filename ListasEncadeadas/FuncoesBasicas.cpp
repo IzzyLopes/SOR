@@ -19,10 +19,10 @@ struct Elemento {
 typedef Elemento * PONT;  // Elemento *p == PONT p;
 
 struct Lista {
-	PONT inicio; // Ponteiro do tipo elemento que aponta para o início
+	PONT inicio; // Ponteiro do tipo elemento que aponta para o inÃ­cio
 };
 
-/* MÉTODOS */
+/* MÃ‰TODOS */
 void initLista(Lista *l) {
 	l->inicio = NULL;
 }
@@ -63,8 +63,8 @@ PONT buscaSequencial(Lista *l, tipoChave chave) {
 	return NULL;
 }
 
-// Se eu achar uma chave maior do que a chave procurada (a lista é ordenada) e significa que a chave procurada não existe
-// Por isso o while agora verifica se a chave apontada pelo ponteiro ainda é menor que a chave procurada
+// Se eu achar uma chave maior do que a chave procurada (a lista Ã© ordenada) e significa que a chave procurada nÃ£o existe
+// Por isso o while agora verifica se a chave apontada pelo ponteiro ainda Ã© menor que a chave procurada
 PONT buscaOrdenada(Lista *l, tipoChave chave) {
 	PONT pos = l -> inicio;
 	
@@ -79,8 +79,8 @@ PONT buscaOrdenada(Lista *l, tipoChave chave) {
 	return NULL;
 }
 
-// Função de busca para saber qual o elemento anterior ao inserido, e qual elemento ele apontava para
-// poder fazer as devidas alterações de ponteiro squando forinserir um valor novo na Lista
+// FunÃ§Ã£o de busca para saber qual o elemento anterior ao inserido, e qual elemento ele apontava para
+// poder fazer as devidas alteraÃ§Ãµes de ponteiro squando forinserir um valor novo na Lista
 PONT buscaForInsert(Lista *l, tipoChave chave, PONT* ant) {
 	*ant = NULL;
 	PONT atual = l->inicio;
@@ -114,11 +114,42 @@ bool insertLista(Lista *l, Registro reg) {
 		l->inicio = i;
 		i->prox = NULL;
 	} else {
-		i->prox = ant->prox; // Terá que apontar para o próximo do número que vinha antes dele
-		ant->prox = i;		 // E o próximo do anterior deveria apontar para ele
+		i->prox = ant->prox; // TerÃ¡ que apontar para o prÃ³ximo do nÃºmero que vinha antes dele
+		ant->prox = i;		 // E o prÃ³ximo do anterior deveria apontar para ele
 	}
 	
 	return true;
+}
+
+bool excluirLista(Lista *l, Registro reg) {
+	tipoChave chave = reg.ch;
+	PONT ant, i;
+	
+	i = buscaForInsert(l, chave, &ant);
+	
+	if(i != NULL) {
+		if(ant == NULL) {
+			l->inicio = i->prox; // Se ele nÃ£o tiver anterior, o inÃ­cio da lista agora aponta para o prÃ³ximo
+		} else {
+			ant->prox=i->prox; 	 // O elemento anterior, apontarÃ¡ para o prÃ³ximo do elemento que estÃ¡ sendo excluÃ­do
+		}
+		free(i); 				// Comando para liberar a memÃ³ria
+		return true;
+	} 
+	
+	return false;
+}
+
+void reinicializarLista(Lista *l) {
+	PONT end = l->inicio;
+
+	while(end!=NULL) {
+		PONT apagar = end;		// Utiliza o ponteiro apagar para conseguir excluir o elemento da lista e permitir que o ponteiro end consiga percorrer a lista inteira
+		end = end->prox ;	
+		free(apagar);
+	}
+
+	l->inicio= NULL;
 }
 
 /* MAIN */
